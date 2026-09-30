@@ -1,0 +1,401 @@
+/* ==========================================================================
+   Project showcase — Swiss posters
+
+   After the owner's reference: three posters side by side, each a flat
+   colour field on a four-column grid, small facts ranged left along the top,
+   a large grotesk title, and a one-bit photograph rising from the bottom
+   edge. No rounded corners, no shadows, one ink (white).
+
+   Each poster is an inline-size container, so its type is set in `cqi` and
+   scales with the poster like print would — the layout is identical at every
+   width, only the size changes. Padding is in %, which resolves against the
+   same width.
+   ========================================================================== */
+
+.works {
+  position: relative;
+  padding-block: clamp(3rem, 8vh, 6rem) 0;
+}
+
+/* --- Section head: a title and a count on one rule ----------------------- */
+
+.works__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-6);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--text);
+}
+
+.works__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.3rem + 3.2vw, 4.25rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: var(--tracking-display);
+}
+
+.works__count {
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* --- The row: three in view, the rest reached sideways ----------------------
+   This is the resting form — a native swipe row with snap points, used on
+   phones and under reduced motion. Inside the pinned home stage the track
+   does not scroll at all; stage.css takes it over and HomeStage moves the
+   cards from scroll position. */
+
+.works {
+  --visible: 3;
+  --gap: clamp(0.75rem, 1.4vw, 1.25rem);
+}
+
+.works__viewport {
+  margin-top: clamp(1.25rem, 3vh, 2rem);
+}
+
+.works__track {
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+  /* Clips the posters' rise-in rather than growing a vertical scrollbar. */
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  padding-bottom: var(--s-3);
+}
+
+.works__car {
+  flex: 0 0 calc((100% - (var(--visible) - 1) * var(--gap)) / var(--visible));
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+/* --- One poster ------------------------------------------------------------ */
+
+.poster {
+  --pad: 5%;
+  container-type: inline-size;
+  position: relative;
+  isolation: isolate;
+  /* `clip`, not `hidden`: a scroll container would lose its content-based
+     minimum height, and then the aspect ratio would clip long copy instead
+     of letting the poster grow. */
+  overflow: clip;
+  /* A floor, not a cage. */
+  aspect-ratio: 3 / 4;
+  padding: var(--pad);
+  /* Hold the copy clear of the photograph. `--art-open` is how much of the
+     silhouette's top is empty (sky, open field) and may sit under the last
+     line of copy; the rest of its height is reserved. In %, which resolves
+     against the poster's width — the same basis as the image's height. */
+  padding-bottom: calc(var(--art-span) * var(--art-ratio) * (1 - var(--art-open)) * 100%);
+  background: var(--poster-color);
+  color: var(--poster-ink);
+}
+
+.poster--neuroone {
+  --poster-color: var(--poster-neuroone);
+}
+
+.poster--snapgrade {
+  --poster-color: var(--poster-snapgrade);
+}
+
+.poster--surge {
+  --poster-color: var(--poster-surge);
+}
+
+.poster--ai-engineering-council {
+  --poster-color: var(--poster-tool-1);
+}
+
+.poster--conan {
+  --poster-color: var(--poster-tool-2);
+}
+
+/* A tool poster has no tagline or stack, so its notes sit at the foot of the
+   copy. Without a photograph there is no image height to hold clear either,
+   and the ordinary padding returns. */
+.poster--tool {
+  display: flex;
+  flex-direction: column;
+}
+
+.poster--tool:not(.poster--has-art) {
+  padding-bottom: var(--pad);
+}
+
+/* Both tool photographs are solid white to their top edge (no sky), so the
+   copy is held a gutter clear of it rather than sitting flush. */
+.poster--tool.poster--has-art {
+  padding-bottom: calc(var(--art-span) * var(--art-ratio) * 100% + var(--pad));
+}
+
+.poster--tool .poster__notes {
+  margin-top: auto;
+}
+
+.poster--tool .poster__blurb {
+  grid-column: span 3;
+}
+
+.poster__soft {
+  color: var(--poster-ink-soft);
+}
+
+/* The grid the type hangs on, drawn faintly as on the reference. */
+.poster__rules {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-inline: var(--pad);
+  pointer-events: none;
+}
+
+.poster__rules span {
+  border-left: 1px solid var(--poster-rule);
+}
+
+.poster__rules span:last-child {
+  border-right: 1px solid var(--poster-rule);
+}
+
+/* --- Top row: four columns of small facts ---------------------------------- */
+
+.poster__meta,
+.poster__notes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  font-size: clamp(0.6875rem, 2.6cqi, 0.8125rem);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.poster__meta {
+  padding-bottom: 3cqi;
+  border-bottom: 1px solid var(--poster-rule);
+}
+
+.poster__meta > div,
+.poster__notes > * {
+  padding-inline: 1.6cqi 1.2cqi;
+}
+
+.poster__meta dd {
+  margin: 0;
+}
+
+.poster__path {
+  overflow-wrap: anywhere;
+}
+
+/* --- Title ------------------------------------------------------------------ */
+
+.poster__title {
+  position: relative;
+  margin-top: 14cqi;
+  padding-left: 1.6cqi;
+  font-family: var(--font-display);
+  font-size: 11.5cqi;
+  font-weight: 500;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+}
+
+/* The project name in the poster face. Michroma is very wide and has a
+   single weight, so it is set smaller than the grotesk category beneath it
+   and tracked slightly tight to keep the longer names on one line. */
+.poster__name {
+  display: block;
+  margin-bottom: 0.18em;
+  font-family: var(--font-poster);
+  font-size: 0.66em;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.poster__category {
+  display: block;
+}
+
+/* Repository names are long and hyphenated, so a tool's title is set smaller
+   and breaks at its hyphens rather than running off the field. */
+.poster__title--tool {
+  font-size: 8.5cqi;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+/* With no category under it, a tool's name is its whole title. */
+.poster__title--tool .poster__name {
+  font-size: 1em;
+  line-height: 1.2;
+}
+
+/* --- Middle row: note, links, description ---------------------------------- */
+
+.poster__notes {
+  position: relative;
+  z-index: 1;
+  margin-top: 8cqi;
+  align-items: start;
+}
+
+.poster__mark {
+  display: block;
+  margin-bottom: 1cqi;
+  font-size: 1.25em;
+  line-height: 1;
+}
+
+.poster__links {
+  display: grid;
+  gap: 0.35em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.poster__links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  min-height: 24px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-thickness var(--dur-fast) var(--ease-out);
+}
+
+.poster__links a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.poster__links a:focus-visible {
+  outline: 2px solid var(--poster-ink);
+  outline-offset: 2px;
+}
+
+.poster__arrow {
+  width: 0.95em;
+  height: 0.95em;
+  rotate: -45deg;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.poster__links a:hover .poster__arrow {
+  translate: 1px -1px;
+}
+
+.poster__blurb {
+  grid-column: span 2;
+  color: var(--poster-ink-soft);
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+/* --- The photograph ------------------------------------------------------------ */
+
+.poster__art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  width: calc(var(--art-span) * 100%);
+  height: auto;
+  pointer-events: none;
+}
+
+/* --- Motion: entrance only ------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .poster {
+    opacity: 0;
+    translate: 0 28px;
+    transition:
+      opacity 700ms var(--ease-out),
+      translate 900ms var(--ease-out);
+    transition-delay: calc(var(--i) * 110ms);
+  }
+
+  .poster.is-in {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* The silhouette rises into place a beat after its poster. */
+  .poster__art {
+    translate: 0 12%;
+    transition: translate 1300ms var(--ease-out);
+    transition-delay: calc(var(--i) * 110ms + 160ms);
+  }
+
+  .poster.is-in .poster__art {
+    translate: 0 0;
+  }
+
+  .poster.is-in:hover .poster__art {
+    translate: 0 -2.5%;
+    transition-delay: 0ms;
+    transition-duration: 700ms;
+  }
+}
+
+/* --- Narrower screens: fewer in view ------------------------------------------ */
+
+@media (max-width: 1080px) {
+  .works {
+    --visible: 2;
+  }
+}
+
+/* A sliver of the next poster shows, so the row reads as swipeable. */
+@media (max-width: 720px) {
+  .works {
+    --visible: 1.15;
+  }
+}
+
+@media (max-width: 480px) {
+  .works__head {
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+
+  /* Four columns get too narrow for the facts at phone width: two by two,
+     and the drawn grid follows. */
+  .poster__rules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .poster__rules span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .poster__rules span:nth-child(2) {
+    border-right: 1px solid var(--poster-rule);
+  }
+
+  .poster__meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 3cqi;
+  }
+
+  .poster__notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 4cqi;
+  }
+
+  .poster__meta,
+  .poster__notes {
+    font-size: 3.3cqi;
+  }
+}

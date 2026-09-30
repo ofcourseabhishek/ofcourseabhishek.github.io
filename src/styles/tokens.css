@@ -1,0 +1,141 @@
+/* ==========================================================================
+   Design tokens — Abhishek Rai portfolio
+
+   Single light theme: warm off-white canvas + deep teal accent.
+   Owner decision, overriding design.md §8.1 (which asked for light + dark and
+   a toggle). There is no dark palette and no theme switching.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- Surfaces & text ------------------------------------------------- */
+  --bg: #faf9f6;
+  --surface: #ffffff;
+  --surface-2: #f3f1ec;
+  --text: #1a1a17;
+  --text-muted: #5f5e58; /* 6.18:1 on --bg */
+  --text-faint: #737169; /* 4.64:1 on --bg — floor for 11px .micro labels */
+  --line: #e6e3db;
+  --line-strong: #d6d2c7;
+
+  /* --- Accent ------------------------------------------------------------
+     Taken from the navy shirt in the portrait. Sampled at the chest the
+     fabric reads #2d3249 (H229 S24% L23%), but used literally it sits only
+     1.38:1 from the body text — it would read as black and stop working as an
+     accent. This keeps the hue (H225) and lifts saturation and lightness
+     enough to separate: 1.94:1 from text, 8.53:1 on the page background.
+     Because the fill is dark, hover goes darker rather than lighter. */
+  --accent: #36477a;
+  --accent-hover: #2b3860;
+  --accent-ink: #ffffff; /* 8.98:1 on --accent */
+  --accent-soft: rgba(54, 71, 122, 0.08);
+  --accent-ring: rgba(54, 71, 122, 0.26);
+
+  /* --- Decorative ------------------------------------------------------- */
+  --halo-from: rgba(255, 255, 255, 0.95);
+  --halo-to: rgba(255, 255, 255, 0);
+  --blob-a: rgba(54, 71, 122, 0.07);
+  --blob-b: rgba(196, 181, 145, 0.16);
+
+  /* --- Posters (the project showcase) ----------------------------------
+     One flat field per project, after the Swiss poster reference; white is
+     the only ink on them. Every value holds white body text at WCAG AA
+     (NeuroOne 7.4:1, Snapgrade 6.9:1, SURGE 5.6:1), and --poster-ink-soft
+     (80% white) still clears 4.5:1 on the darkest-contrast one, SURGE. */
+  --poster-neuroone: #4f3cc9;
+  --poster-snapgrade: #b3121f;
+  --poster-surge: #86621a;
+  /* The two tool cards take colours the page already owns: the accent
+     (white 8.98:1) and the text ink (white 17:1). */
+  --poster-tool-1: #36477a;
+  --poster-tool-2: #1a1a17;
+  --poster-ink: #ffffff;
+  --poster-ink-soft: rgba(255, 255, 255, 0.8);
+  --poster-rule: rgba(255, 255, 255, 0.22);
+
+  /* --- Elevation (warm-tinted, never pure black) ------------------------ */
+  --shadow-xs: 0 1px 2px rgba(41, 37, 28, 0.05);
+  --shadow-sm: 0 2px 8px rgba(41, 37, 28, 0.06);
+  --shadow-md: 0 10px 30px -12px rgba(41, 37, 28, 0.16);
+  --shadow-lg: 0 28px 60px -28px rgba(41, 37, 28, 0.26);
+
+  /* --- Typography ------------------------------------------------------- */
+  /* Neue Haas Grotesk ships as two optical cuts and they are not
+     interchangeable: Display is drawn for large sizes with tight spacing and
+     short descenders; Text is drawn for body copy with looser spacing.
+     Both names are listed twice — the desktop/self-hosted name first, then
+     the Adobe Fonts (Typekit) name, which is lowercase and hyphenated.
+
+     Until a licensed copy is installed, the stack falls through to Inter
+     Tight, the closest freely-licensed neo-grotesque. See src/styles/fonts.css
+     to self-host. */
+  --font-display: 'Neue Haas Grotesk Display Pro', 'neue-haas-grotesk-display',
+    'Inter Tight', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-sans: 'Neue Haas Grotesk Text Pro', 'neue-haas-grotesk-text',
+    'Inter Tight', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+  /* Display-only: the project name on each showcase poster. Michroma is an
+     open-licence stand-in for Nasalization, the owner's pick, whose free
+     licence does not cover webfont embedding. Titles only, never body text. */
+  --font-poster: 'Michroma', var(--font-display);
+
+  --fs-display: clamp(2.75rem, 1.2rem + 6.4vw, 5.5rem);
+  --fs-title: clamp(1.05rem, 0.85rem + 0.6vw, 1.35rem);
+  --fs-body: clamp(0.95rem, 0.9rem + 0.15vw, 1.0625rem);
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.8125rem;
+  --fs-micro: 0.6875rem;
+
+  --lh-tight: 0.92;
+  --lh-body: 1.68;
+
+  --tracking-display: -0.035em;
+  --tracking-micro: 0.14em;
+
+  /* --- Spacing (4px base) ----------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.25rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-10: 2.5rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-20: 5rem;
+
+  /* --- Radii ------------------------------------------------------------ */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* --- Motion ------------------------------------------------------------ */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --dur-fast: 140ms;
+  --dur-base: 240ms;
+  --dur-slow: 520ms;
+  --dur-entrance: 760ms;
+
+  /* --- Layout ------------------------------------------------------------ */
+  --page-max: 1440px;
+  /* The nav floats clear of the page rather than sitting in the flow, so its
+     metrics are stated once here: the gap above it, its own height, and the
+     matching clearance below that every section is held off by. `--nav-block`
+     is the total space it occupies, and the first screen is the viewport minus
+     that — the hero used to be `flex: 1` and absorb the viewport, which would
+     squash it now that content follows. */
+  --nav-gap: clamp(0.6rem, 1.4vh, 1.15rem);
+  --nav-h: 46px;
+  --nav-block: calc(var(--nav-gap) * 2 + var(--nav-h));
+  --screen-h: calc(100dvh - var(--nav-block));
+  /* Content now sits directly on the page, so the gutter is the only thing
+     holding it off the viewport edge — it carries more weight than it did
+     when there was an inset card. */
+  --page-gutter: clamp(1.25rem, 4.5vw, 4.5rem);
+}

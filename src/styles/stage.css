@@ -1,0 +1,199 @@
+/* ==========================================================================
+   Home stage — hero, showcase train, About intro as one pinned frame
+
+   HomeStage writes the sequence onto the stage as custom properties, each
+   0 → 1 over its own window of the scroll:
+
+     --out    the hero takes itself apart
+     --train  the showcase runs in from the right edge of the screen
+     --leave  the showcase departs to the left
+     --photo  the About portrait slides in from the left
+     --copy   the About text settles in
+
+   The cards themselves are positioned per card from script (the carousel
+   pan needs measured widths), so nothing here moves them.
+
+   Every rule sits under `.is-scrubbed`, which is only present while the
+   stage is armed. Without it the three layers are plain stacked sections.
+   ========================================================================== */
+
+.stage {
+  position: relative;
+}
+
+.stage.is-scrubbed {
+  /* Scroll distance the whole sequence is spread across. */
+  --travel: 400vh;
+  height: calc(var(--screen-h) + var(--travel));
+}
+
+/* Nav targets. Scrolling one to the nav's lower edge puts the stage at
+   exactly progress `--at`, so a jump lands on that act at rest. The stage
+   sits at the page top, so the pin is stuck from scroll 0 and its window is
+   the travel less the nav clearance (see `pinWindow` in useScrollScrub). */
+.stage__anchor {
+  position: absolute;
+  top: calc(var(--at) * (var(--travel) - var(--nav-block)) + var(--nav-block));
+  left: 0;
+  width: 1px;
+  height: 1px;
+  scroll-margin-top: var(--nav-block);
+  pointer-events: none;
+}
+
+.stage.is-scrubbed .stage__pin {
+  position: sticky;
+  top: var(--nav-block);
+  height: var(--screen-h);
+  /* Clipped top and bottom (the portrait drops out of frame) but not at the
+     sides: the train has to run in from the screen's edge, not the content
+     column's. `.page` clips horizontally at the viewport. */
+  overflow: visible clip;
+}
+
+/* By the About act the hero is fully faded, so nothing needs the clip — and
+   keeping it would cut the portrait's drop-shadow off in a hard line once
+   the pin releases and the frame scrolls away. */
+.stage.is-scrubbed[data-phase='about'] .stage__pin {
+  overflow: visible;
+}
+
+.stage.is-scrubbed .stage__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.stage.is-scrubbed .stage__layer--works {
+  z-index: 2;
+}
+
+.stage.is-scrubbed .stage__layer--about {
+  z-index: 3;
+}
+
+/* Only the layer being read takes the pointer; the others are transparent
+   sheets over it. */
+.stage.is-scrubbed:not([data-phase='hero']) .hero,
+.stage.is-scrubbed:not([data-phase='works']) .stage__layer--works,
+.stage.is-scrubbed:not([data-phase='about']) .stage__layer--about {
+  pointer-events: none;
+}
+
+/* --- Act 1: the hero comes apart ------------------------------------------- */
+
+.stage.is-scrubbed .hero {
+  height: 100%;
+  min-height: 0;
+}
+
+/* The portrait drops out of frame. `translate` is free here: the entrance
+   animation has finished and the pointer parallax uses `transform`. */
+.stage.is-scrubbed .portrait {
+  translate: 0 calc(var(--out) * 46vh);
+  opacity: calc(1 - var(--out) * 1.15);
+}
+
+/* The copy just fades, with the barest lift so it does not feel inert. */
+.stage.is-scrubbed .hero__col--left > * {
+  opacity: calc(1 - var(--out) * 1.7);
+  translate: 0 calc(var(--out) * -3vh);
+}
+
+/* The project system leaves to the right, continuing the orbit's direction,
+   and is gone before the train's lead card gets there. */
+.stage.is-scrubbed .hero__col--right {
+  translate: calc(var(--out) * 62vw) 0;
+  opacity: calc(1 - var(--out) * 1.25);
+}
+
+/* --- Act 2: the showcase train ---------------------------------------------- */
+
+.stage.is-scrubbed .works {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-block: clamp(0.5rem, 2.5vh, 1.75rem) clamp(0.75rem, 3.5vh, 2.25rem);
+}
+
+/* The heading arrives with the train and leaves with it. */
+.stage.is-scrubbed .works__head {
+  opacity: calc(var(--train) * (1 - var(--leave)));
+  translate: calc((1 - var(--train)) * 8vw) 0;
+}
+
+/* Whatever height is left under the heading. Size containment lets the
+   cards size against it in `cqb`. */
+.stage.is-scrubbed .works__viewport {
+  flex: 1 1 0;
+  min-height: 0;
+  container-type: size;
+}
+
+.stage.is-scrubbed .works__track {
+  height: 100%;
+  /* Hung from the heading. On a tall screen the cards are width-bound and
+     the spare height goes below them, not into a gap under the rule. */
+  align-items: flex-start;
+  overflow: visible;
+  scroll-snap-type: none;
+  padding-bottom: 0;
+}
+
+/* Three across, unless the frame is too short for three 3:4 posters that
+   wide — then the height decides and a fourth card shows at the edge. */
+.stage.is-scrubbed .works__car {
+  flex-basis: min(
+    calc((100cqi - (var(--visible) - 1) * var(--gap)) / var(--visible)),
+    75cqb
+  );
+  will-change: translate, opacity;
+}
+
+/* The train is the entrance here; the posters' own rise-in would only
+   happen off-screen, or lag behind the scroll. */
+.stage.is-scrubbed .poster {
+  opacity: 1;
+  translate: none;
+  transition: none;
+}
+
+/* --- Act 3: About materialises ---------------------------------------------- */
+
+.stage.is-scrubbed .about-intro {
+  height: 100%;
+  padding: 0;
+}
+
+/* Portrait tall enough to own the frame without touching its edges, capped
+   by width so the copy keeps a readable column on narrower screens. The
+   ratio is the cut-out's own (722 × 1400). */
+.stage.is-scrubbed .about__intro {
+  --photo-h: min(calc(var(--screen-h) * 0.88), calc(38vw * 1400 / 722));
+  height: 100%;
+  grid-template-columns: calc(var(--photo-h) * 722 / 1400) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.stage.is-scrubbed .about__photo {
+  height: var(--photo-h);
+  opacity: 1;
+  translate: calc((1 - var(--photo)) * -75vw) 0;
+  transition: none;
+  will-change: translate;
+}
+
+.stage.is-scrubbed .about__text {
+  max-width: 62ch;
+}
+
+/* Label, heading, then each paragraph, in order: `--k` is the position in
+   that sequence (label and heading carry --i -2 and -1). */
+.stage.is-scrubbed .about__label,
+.stage.is-scrubbed .about__heading,
+.stage.is-scrubbed .about__para {
+  --k: calc(var(--i, 0) + 2);
+  --t: clamp(0, calc(var(--copy) * 1.5 - var(--k) * 0.1), 1);
+  opacity: var(--t);
+  translate: 0 calc((1 - var(--t)) * 18px);
+  transition: none;
+}

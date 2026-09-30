@@ -1,0 +1,491 @@
+/* ==========================================================================
+   Page shell, navigation, and shared primitives (buttons, pills, cards)
+   ========================================================================== */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  /* Decoration bleeds past the side gutters and must be contained. `clip`
+     rather than `hidden`: `hidden` would turn this into a scroll container and
+     make the tablet layout's lower content unreachable. */
+  overflow-x: clip;
+}
+
+/* Content column. Purely a max-width + gutter constraint — no background,
+   border, radius or shadow. The rounded panel in the reference was the
+   mockup's screen frame, not part of the design. */
+.shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: 0 var(--page-gutter) 0;
+}
+
+.shell__main {
+  display: block;
+}
+
+/* --- Navigation -----------------------------------------------------------
+   The bar floats over the page rather than sitting in the flow: fixed, inset
+   from the top by --nav-gap, and every section is held off by --nav-block so
+   nothing is ever hidden underneath it. It lives outside `.page` in the DOM,
+   because `.page` clips overflow and would clip a fixed child with it. */
+
+.nav {
+  position: fixed;
+  top: var(--nav-gap);
+  left: 50%;
+  translate: -50% 0;
+  z-index: 50;
+  width: min(var(--page-max), calc(100% - var(--page-gutter) * 2));
+  display: grid;
+  /* Brand at the left, the section strip pinned to the right. Neither track
+     changes on scroll, so the strip never moves once the page is loaded. */
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-4);
+  min-height: var(--nav-h);
+}
+
+.nav__brand {
+  justify-self: start;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding: var(--s-1);
+  transform-origin: left center;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.nav__brand-dot {
+  color: var(--accent);
+}
+
+/* Bare text, so it leaves before the About portrait can scroll under it; the
+   strip stays put. */
+.nav.is-brand-hidden .nav__brand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Back at Contact it is pressed on like a label: it arrives a touch large
+   and lifted, overshoots slightly, and settles flat. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav.is-brand-stuck .nav__brand {
+    animation: brand-stick var(--dur-slow) var(--ease-spring) both;
+  }
+}
+
+@keyframes brand-stick {
+  from {
+    opacity: 0;
+    translate: 0 -8px;
+    scale: 1.18;
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+/* --- The morphic strip -----------------------------------------------------
+   After kokonutui.com/docs/navigation/morphic-navbar. The links sit in one
+   joined bar; the active link detaches into its own pill and the segments
+   either side round the corners that now face the gap. */
+
+.morphnav {
+  justify-self: end;
+}
+
+.morphnav__strip {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--r-md);
+  /* Clips the segments to the bar's outer radius; the gap the active pill
+     opens shows the page through, which is the whole effect. */
+  overflow: hidden;
+  /* `filter`, not `box-shadow`: drop-shadow follows the actually-painted
+     shape, so once the bar splits each piece carries its own shadow instead
+     of one rectangle sitting behind the gap. */
+  filter: drop-shadow(0 4px 10px rgba(41, 37, 28, 0.1))
+    drop-shadow(0 12px 28px rgba(41, 37, 28, 0.08));
+}
+
+.morphnav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  /* Every segment is filled — in the original the whole bar is solid and the
+     morph is it coming apart. Leaving the inactive ones transparent meant
+     there was no bar to break. */
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 0;
+  /* Margin and radius are the morph, so both are transitioned; it is four
+     small items, so the per-frame reflow is cheap. */
+  transition: margin var(--dur-slow) var(--ease-spring),
+    border-radius var(--dur-slow) var(--ease-spring),
+    background-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+.morphnav__item:hover:not(.is-active) {
+  background: var(--surface-2);
+}
+
+/* Logical, so the rounding follows the strip's direction — which flips to a
+   column at narrow widths. */
+.morphnav__item.round-s {
+  border-start-start-radius: var(--r-md);
+  border-end-start-radius: var(--r-md);
+}
+
+.morphnav__item.round-e {
+  border-start-end-radius: var(--r-md);
+  border-end-end-radius: var(--r-md);
+}
+
+/* The active item detaches into its own pill. Same fill as the rest — the
+   separation and the weight are the signal, exactly as in the original. */
+.morphnav__item.is-active {
+  margin-inline: 0.4rem;
+  border-radius: var(--r-md);
+  font-weight: 600;
+}
+
+/* Icons are for the stacked mobile menu only; on the desktop strip the labels
+   carry it, as in the original. */
+.morphnav__icon {
+  display: none;
+  flex: none;
+}
+
+.nav .nav__toggle {
+  display: none;
+  grid-area: toggle;
+}
+
+/* --- Buttons -------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  transition: translate var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.btn--accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 6px 18px -8px var(--accent-ring);
+}
+
+.btn--accent:hover {
+  background: var(--accent-hover);
+  translate: 0 -2px;
+  box-shadow: 0 12px 24px -10px var(--accent-ring);
+}
+
+.btn--accent:active {
+  translate: 0 0;
+}
+
+.btn__arrow {
+  width: 15px;
+  height: 15px;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.btn:hover .btn__arrow {
+  translate: 3px 0;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-xs);
+  transition: translate var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent-ring);
+  translate: 0 -2px;
+  box-shadow: var(--shadow-sm);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Pills ---------------------------------------------------------------- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  box-shadow: var(--shadow-xs);
+  width: fit-content;
+  max-width: 100%;
+}
+
+.pill--status {
+  background: var(--accent-soft);
+  border-color: var(--accent-ring);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.pill__pulse {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pill__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2.4s var(--ease-out) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.55;
+    scale: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    scale: 3;
+  }
+}
+
+.pill--email {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  transition: translate var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+.pill--email:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+  translate: 0 -2px;
+}
+
+.pill__icon {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--accent);
+}
+
+.pill--email.is-copied {
+  color: var(--accent);
+  border-color: var(--accent-ring);
+}
+
+/* The copy result, floated above the pill so the hero does not reflow. */
+.pill__toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--s-2));
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  translate: -50% 4px;
+  transition: opacity var(--dur-base) var(--ease-out),
+    translate var(--dur-base) var(--ease-out);
+}
+
+.pill--email.is-copied .pill__toast,
+.pill--email.is-failed .pill__toast {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+.pill--email.is-failed .pill__toast {
+  background: var(--text);
+}
+
+/* --- Cards ---------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+}
+
+.card--quiet {
+  background: transparent;
+  box-shadow: none;
+  border-style: dashed;
+}
+
+.card__kicker {
+  margin-bottom: var(--s-3);
+  color: var(--accent);
+}
+
+.card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.card__link-arrow {
+  width: 14px;
+  height: 14px;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.card__link:hover .card__link-arrow {
+  translate: 3px 0;
+}
+
+.card__link--pending {
+  color: var(--text-faint);
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* --- Narrow navigation -----------------------------------------------------
+   The four section links do not fit beside the brand, so below this width the strip collapses behind the morphing menu button and
+   stacks as separate rows rather than a joined bar. */
+@media (max-width: 860px) {
+  .nav {
+    grid-template-areas:
+      'brand toggle'
+      'links links';
+    grid-template-columns: 1fr auto;
+    row-gap: var(--s-3);
+  }
+
+  .nav__brand {
+    grid-area: brand;
+  }
+
+  /* The menu button takes the strip's place at the right. */
+  .nav .nav__toggle {
+    display: inline-flex;
+    justify-self: end;
+  }
+
+  .morphnav {
+    grid-area: links;
+    justify-self: stretch;
+    display: none;
+  }
+
+  .morphnav.is-open {
+    display: block;
+  }
+
+  /* Stacked, the same morph runs vertically: the bar is joined top-to-bottom
+     and the active row detaches. The radii flip to the block axis, because
+     `border-start-start-radius` follows writing mode, not flex direction. */
+  .morphnav__item,
+  .morphnav__item.round-s,
+  .morphnav__item.round-e {
+    border-radius: 0;
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  .morphnav__item.round-s {
+    border-radius: var(--r-md) var(--r-md) 0 0;
+  }
+
+  .morphnav__item.round-e {
+    border-radius: 0 0 var(--r-md) var(--r-md);
+  }
+
+  .morphnav__item.round-s.round-e {
+    border-radius: var(--r-md);
+  }
+
+  .morphnav__item.is-active {
+    margin-inline: 0;
+    margin-block: 0.4rem;
+    border-radius: var(--r-md);
+    font-weight: 600;
+  }
+
+  /* Icons earn their place here: the rows are wide and scanning them benefits
+     from a glyph, which the tight desktop strip did not. */
+  .morphnav__icon {
+    display: inline-block;
+  }
+
+  .morphnav__strip {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: var(--s-3);
+  }
+}

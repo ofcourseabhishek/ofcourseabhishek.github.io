@@ -1,0 +1,13 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Editor and assistant settings (machine-specific)
+.idea/
+.claude/
+
+# Source images the site does not use directly (derived versions are kept)
+assets/potrait.png
+assets/inspiration.png
+assets/project_showcase/

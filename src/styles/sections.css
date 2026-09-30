@@ -1,0 +1,438 @@
+/* ==========================================================================
+   Projects (editorial) + Contact
+   ========================================================================== */
+
+.section-head {
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+  max-width: 34ch;
+}
+
+.section-head__label {
+  color: var(--accent);
+  margin-bottom: var(--s-3);
+}
+
+.section-head__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 1rem + 2.2vw, 2.9rem);
+  font-weight: 700;
+  line-height: 1.07;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* --- The editorial rows ---------------------------------------------------- */
+
+.work-list {
+  border-top: 1px solid var(--line);
+}
+
+.work-row {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: start;
+  padding-block: clamp(1.75rem, 4vh, 2.75rem);
+  border-bottom: 1px solid var(--line);
+
+  opacity: 0;
+  translate: 0 20px;
+  transition: opacity 640ms var(--ease-out), translate 760ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 110ms + 120ms);
+}
+
+.projects.is-in .work-row {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.work-row__num {
+  color: var(--text-faint);
+  padding-top: 0.35rem;
+}
+
+.work-row__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 0.9rem + 1.1vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.work-row__name a {
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.work-row__name a:hover {
+  color: var(--accent);
+}
+
+.work-row__blurb {
+  margin-top: var(--s-3);
+  max-width: 62ch;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.work-row__stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+}
+
+.work-row__chip {
+  padding: 0.22rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.work-row__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--s-2);
+  padding-top: 0.35rem;
+}
+
+.work-row__live,
+.work-row__repo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  white-space: nowrap;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+/* Only one of the three is deployed, so the filled treatment marks it. */
+.work-row__live {
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.work-row__live:hover {
+  background: var(--accent-hover);
+}
+
+.work-row__repo {
+  color: var(--text-muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.work-row__repo:hover {
+  color: var(--text);
+}
+
+.work-row__arrow {
+  width: 13px;
+  height: 13px;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.work-row__live:hover .work-row__arrow,
+.work-row__repo:hover .work-row__arrow {
+  translate: 3px 0;
+}
+
+/* ==========================================================================
+   Contact — an editorial spread
+
+   Wide column: eyebrow, a two-line headline (the second line in a lighter
+   voice), the introduction. Narrow column: the email as the primary action
+   with a copy button, then the profiles as a ruled list. One faint line of
+   location and availability closes the page.
+   ========================================================================== */
+
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  column-gap: clamp(2rem, 7vw, 7.5rem);
+  row-gap: clamp(3rem, 8vh, 5rem);
+  align-items: end;
+  padding-block: clamp(5rem, 16vh, 10rem) clamp(2rem, 6vh, 3.5rem);
+  border-top: 1px solid var(--line);
+}
+
+.contact__eyebrow {
+  margin-bottom: var(--s-6);
+  color: var(--accent);
+}
+
+.contact__headline {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 1.2rem + 4.6vw, 5.75rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+/* Each line is its own block so the two enter separately and never share a
+   ragged line with each other. */
+.contact__line {
+  display: block;
+}
+
+/* The answer to the question: same face, lighter weight and a quieter ink,
+   so the pair reads as a call and a response. */
+.contact__line--soft {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.contact__intro {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 52ch;
+  margin-top: clamp(2rem, 5vh, 3rem);
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  text-wrap: pretty;
+}
+
+/* --- The narrow column -------------------------------------------------------- */
+
+.contact__aside {
+  display: grid;
+  gap: clamp(2rem, 5vh, 3rem);
+}
+
+.contact__label {
+  margin-bottom: var(--s-3);
+}
+
+.contact__email {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-block: var(--s-3);
+  border-bottom: 1px solid var(--text);
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 0.9rem + 0.8vw, 1.6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  transition: color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+/* Long enough to wrap on a phone; break inside the address rather than
+   pushing the arrow off the edge. */
+.contact__email-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.contact__email:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.contact__arrow {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.contact__email:hover .contact__arrow,
+.contact__email:focus-visible .contact__arrow {
+  translate: 5px 0;
+}
+
+.contact__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  margin-top: var(--s-2);
+  padding-inline: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  letter-spacing: var(--tracking-micro);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.contact__copy:hover {
+  color: var(--text);
+}
+
+/* Colour plus the icon and wording change, so the state never rests on
+   colour alone. */
+.contact__copy.is-copied {
+  color: var(--accent);
+}
+
+.contact__copy.is-failed {
+  color: var(--text);
+}
+
+.contact__copy-icon {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+
+.contact__copy.is-copied .contact__copy-icon {
+  animation: contact-tick var(--dur-slow) var(--ease-spring);
+}
+
+@keyframes contact-tick {
+  from {
+    scale: 0.4;
+    opacity: 0;
+  }
+}
+
+/* --- Profiles: a ruled list -------------------------------------------------- */
+
+.contact__socials {
+  border-top: 1px solid var(--line);
+}
+
+.contact__social {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--s-4);
+  min-height: 52px;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  transition: color var(--dur-base) var(--ease-out),
+    padding var(--dur-base) var(--ease-out);
+}
+
+.contact__social-handle {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: var(--text-faint);
+  transition: color var(--dur-base) var(--ease-out);
+}
+
+.contact__social-arrow {
+  width: 16px;
+  height: 16px;
+  color: var(--text-faint);
+  transition: translate var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+
+/* The row eases inward and the arrow leaves toward its corner. */
+.contact__social:hover,
+.contact__social:focus-visible {
+  color: var(--accent);
+  padding-left: var(--s-2);
+}
+
+.contact__social:hover .contact__social-handle,
+.contact__social:focus-visible .contact__social-handle,
+.contact__social:hover .contact__social-arrow,
+.contact__social:focus-visible .contact__social-arrow {
+  color: var(--accent);
+}
+
+.contact__social:hover .contact__social-arrow,
+.contact__social:focus-visible .contact__social-arrow {
+  translate: 3px -3px;
+}
+
+.contact__foot {
+  grid-column: 1 / -1;
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+  color: var(--text-faint);
+}
+
+/* --- Entrance: staggered by each block's `--i` -------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .contact [style*='--i'] {
+    opacity: 0;
+    translate: 0 18px;
+    transition: opacity 640ms var(--ease-out), translate 760ms var(--ease-out);
+    transition-delay: calc(var(--i) * 90ms);
+  }
+
+  .contact.is-in [style*='--i'] {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* --- Tablet: the narrow column needs more of the width ----------------------- */
+
+@media (max-width: 1080px) {
+  .contact {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    column-gap: clamp(2rem, 5vw, 4rem);
+  }
+}
+
+/* --- Phones: one column, email first after the introduction ------------------ */
+
+@media (max-width: 720px) {
+  .contact {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: clamp(3.5rem, 10vh, 5rem);
+  }
+
+  .contact__headline {
+    font-size: clamp(2.25rem, 1.2rem + 5.2vw, 3.25rem);
+  }
+}
+
+/* --- Responsive ------------------------------------------------------------ */
+
+@media (max-width: 720px) {
+  .work-row {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .work-row__links {
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: var(--s-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-row {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* --- Contribution tag ------------------------------------------------------
+   Marks the entries GitHub reports as forks, so a reader sees the context
+   before they see the fork badge on the repository itself. */
+.tag {
+  display: inline-block;
+  margin-left: var(--s-3);
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-pill);
+  vertical-align: middle;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+}

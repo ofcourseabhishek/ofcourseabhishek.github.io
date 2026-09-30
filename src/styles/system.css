@@ -1,0 +1,361 @@
+/* ==========================================================================
+   Project system — planets orbiting the portrait, moons orbiting the planets
+
+   The portrait is the sun; each project card is a planet; that project's
+   stack circles it as moons.
+   ========================================================================== */
+
+.system {
+  --orbit-r: 164px;
+  --moon: 56px;
+  --moon-icon: 36px;
+  --spin: 52s;
+  /* Small, because the pivot is the portrait — a long radius turns even a few
+     degrees into a wide arc. */
+  --swing: 14deg;
+  /* Overwritten at runtime with the measured offset to the portrait's centre;
+     these fallbacks keep the arc sane before the first measurement. */
+  --pivot-dx: -420px;
+  --pivot-dy: 40px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-4);
+  width: 100%;
+}
+
+.system__stage {
+  position: relative;
+  width: calc(var(--orbit-r) * 2 + var(--moon));
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  max-width: 100%;
+}
+
+/* The orbital path, drawn so the moons read as travelling a track rather than
+   drifting at random. */
+.system__ring {
+  position: absolute;
+  inset: calc(var(--moon) / 2);
+  border: 1px dashed var(--line-strong);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* --- Moons ---------------------------------------------------------------- */
+
+/* One animated angle, inherited by both the ring and every counter-rotation.
+   Two independent animations would drift apart: the moons remount when the
+   project changes and restart their animation mid-cycle, which left the marks
+   permanently tilted by whatever the phase difference happened to be. Reading
+   a single inherited value makes them correct at any mount time. */
+@property --orbit-a {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+.system__stage {
+  animation: orbit-tick var(--spin) linear infinite;
+}
+
+@keyframes orbit-tick {
+  from {
+    --orbit-a: 0deg;
+  }
+  to {
+    --orbit-a: 360deg;
+  }
+}
+
+.system__orbit {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* `rotate`, not `transform` — the moons use `transform` for placement. */
+  rotate: var(--orbit-a);
+}
+
+.system.is-paused .system__stage {
+  animation-play-state: paused;
+}
+
+.moon {
+  position: absolute;
+  width: var(--moon);
+  height: var(--moon);
+  /* Placement on the ring. Static — the spin lives on the parent. */
+  transform: rotate(var(--a)) translateX(var(--orbit-r));
+  animation: moon-in 520ms var(--ease-spring) backwards;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes moon-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Cancels the ring's rotation so the mark never turns upside down. Derived
+   from the same inherited angle, so it can never fall out of phase. */
+.moon__despin {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  rotate: calc(-1 * var(--orbit-a));
+}
+
+/* Cancels this moon's own placement angle. */
+.moon__deangle {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform: rotate(calc(-1 * var(--a)));
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.moon__icon {
+  width: var(--moon-icon);
+  height: var(--moon-icon);
+  object-fit: contain;
+  filter: saturate(0.9);
+}
+
+/* --- Planets -------------------------------------------------------------- */
+
+.planet {
+  position: absolute;
+  /* Narrow enough that the ring clears the card's *corners*, not just its
+     edges — the diagonal is what a moon actually grazes. */
+  width: calc(var(--orbit-r) * 2 - var(--moon) - 60px);
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+
+  /* The centre of rotation is the portrait, not the card. Cards therefore
+     travel an arc around the figure the way a planet moves around its star. */
+  transform-origin: calc(50% + var(--pivot-dx)) calc(50% + var(--pivot-dy));
+
+  /* Parked off to the entry side, waiting to swing in. */
+  rotate: var(--swing);
+  opacity: 0;
+  scale: 0.9;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-out),
+    rotate var(--dur-slow) var(--ease-out),
+    scale var(--dur-slow) var(--ease-out),
+    visibility 0s linear var(--dur-base);
+}
+
+.planet.is-active {
+  rotate: 0deg;
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  transition: opacity var(--dur-base) var(--ease-out),
+    rotate var(--dur-slow) var(--ease-spring),
+    scale var(--dur-slow) var(--ease-spring),
+    visibility 0s;
+}
+
+/* The card that just left continues in the same direction instead of
+   retreating the way it arrived. */
+.planet.is-leaving {
+  rotate: calc(-1 * var(--swing));
+}
+
+/* Cancels the arc's tilt about the card's own centre, so the card slides along
+   the orbit while its text stays level. Same duration and easing as the
+   parent, so the two stay locked together. */
+.planet__body {
+  rotate: calc(-1 * var(--swing));
+  transform-origin: 50% 50%;
+  transition: rotate var(--dur-slow) var(--ease-out);
+}
+
+.planet.is-active .planet__body {
+  rotate: 0deg;
+  transition: rotate var(--dur-slow) var(--ease-spring);
+}
+
+.planet.is-leaving .planet__body {
+  rotate: var(--swing);
+}
+
+/* Only the travel is removed; the card still appears and disappears. */
+@media (prefers-reduced-motion: reduce) {
+  .planet,
+  .planet.is-active,
+  .planet.is-leaving,
+  .planet__body,
+  .planet.is-active .planet__body,
+  .planet.is-leaving .planet__body {
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+.planet__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.planet__name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.planet__name:hover {
+  color: var(--accent);
+}
+
+.planet__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-ring);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+  transition: background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.planet__live:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.planet__live-arrow {
+  width: 10px;
+  height: 10px;
+}
+
+.planet__blurb {
+  margin-top: var(--s-2);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* The moons are decorative, so the stack is also stated as text here. */
+.planet__stack {
+  margin-top: var(--s-3);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--line);
+  letter-spacing: 0.08em;
+  text-transform: none;
+  font-size: 0.625rem;
+}
+
+/* --- Controls ------------------------------------------------------------- */
+
+.system__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.system__dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.system__dot-mark {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: background-color var(--dur-base) var(--ease-out),
+    scale var(--dur-base) var(--ease-spring);
+}
+
+.system__dot:hover .system__dot-mark {
+  background: var(--text-faint);
+}
+
+.system__dot.is-active .system__dot-mark {
+  background: var(--accent);
+  scale: 1.35;
+}
+
+.system__more {
+  margin-left: var(--s-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.system__more-arrow {
+  width: 13px;
+  height: 13px;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.system__more:hover .system__more-arrow {
+  translate: 3px 0;
+}
+
+/* --- Reduced motion -------------------------------------------------------
+   The ring stops and the moons hold their placement angles, so the layout is
+   identical — only the travel is removed. Auto-advance is disabled in JS. */
+@media (prefers-reduced-motion: reduce) {
+  .system__stage {
+    animation: none !important;
+  }
+}
+
+/* --- Narrow ---------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .system {
+    --orbit-r: 140px;
+    --moon: 48px;
+    --moon-icon: 30px;
+  }
+}
+
+@media (max-width: 420px) {
+  .system {
+    --orbit-r: 132px;
+    --moon: 46px;
+    --moon-icon: 28px;
+  }
+
+  .planet {
+    padding: var(--s-3);
+  }
+}

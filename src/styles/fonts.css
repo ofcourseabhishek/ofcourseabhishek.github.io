@@ -1,0 +1,77 @@
+/* ==========================================================================
+   Neue Haas Grotesk — self-hosting slot
+
+   NHG is a commercial typeface (Monotype). No font files are bundled with this
+   repo. Pick ONE of the two routes below; the rest of the CSS needs no change
+   either way, because `--font-display` / `--font-sans` in tokens.css already
+   name NHG first and fall through to Inter Tight until it resolves.
+
+   ---------------------------------------------------------------------------
+   ROUTE A — Adobe Fonts (included with Creative Cloud)
+   ---------------------------------------------------------------------------
+   1. fonts.adobe.com -> search "Neue Haas Grotesk" -> add Display and Text
+      to a Web Project.
+   2. Adobe gives you a kit URL. Add it to index.html <head>:
+
+        <link rel="stylesheet" href="https://use.typekit.net/XXXXXXX.css" />
+
+   3. Nothing else. The Typekit family names (neue-haas-grotesk-display /
+      neue-haas-grotesk-text) are already in the stack.
+   Note: this adds a render-blocking request to an external host, and the kit
+   is domain-locked — add your production domain in the Adobe project settings.
+
+   ---------------------------------------------------------------------------
+   ROUTE B — Self-host a purchased webfont licence (faster, no third party)
+   ---------------------------------------------------------------------------
+   1. Buy a webfont licence (myfonts.com / monotype.com). You need at least:
+        Display 700  - the name
+        Text 400/500 - body, nav, cards
+   2. Convert to .woff2 if the vendor ships .otf/.ttf, and drop the files in
+      public/fonts/.
+   3. Uncomment the @font-face blocks below and import this file from App.jsx
+      ABOVE tokens.css:  import './styles/fonts.css'
+   4. Preload just the display weight in index.html, since it paints the
+      largest text and is visible immediately:
+
+        <link rel="preload" as="font" type="font/woff2" crossorigin
+              href="/fonts/NeueHaasGrotDisp-75Bold.woff2" />
+
+   `font-display: swap` is deliberate: text renders in the fallback straight
+   away and reflows once NHG arrives. Inter Tight is metrically close enough
+   that the swap is not jarring. Do not use `block` — it would hide the hero
+   name behind a network request.
+   ========================================================================== */
+
+/*
+@font-face {
+  font-family: 'Neue Haas Grotesk Display Pro';
+  src: url('/fonts/NeueHaasGrotDisp-75Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Text Pro';
+  src: url('/fonts/NeueHaasGrotText-55Roman.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Text Pro';
+  src: url('/fonts/NeueHaasGrotText-65Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Text Pro';
+  src: url('/fonts/NeueHaasGrotText-75Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
