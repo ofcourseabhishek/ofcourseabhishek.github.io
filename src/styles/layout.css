@@ -489,3 +489,12 @@
     margin-bottom: var(--s-3);
   }
 }
+
+/* On phones the fixed brand is bare text floating over the scrolling content,
+   stepping aside and back as sections pass beneath it. Home is already in the
+   menu, so the mark is dropped here and the bar holds only the menu button. */
+@media (max-width: 720px) {
+  .nav__brand {
+    display: none;
+  }
+}

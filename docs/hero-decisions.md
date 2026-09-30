@@ -27,7 +27,7 @@ still to come. My projects view not started.
 | Brand mark | `ark.` with the accent dot | Owner decision, replacing `abhishek.` The full name still carries the hero, and the nav link keeps the accessible name "Abhishek Rai — home". |
 | §5.8 Featured work | Snapgrade, NeuroOne, Surge | Owner-selected. All three names, blurbs and URLs were read off github.com/ofcourseabhishek, not written from the résumé or invented. |
 | §9 Motion | CSS-only: staggered entrance, pointer parallax, hover lift, theme cross-fade | No animation library. Entrances animate `opacity` + `translate`; parallax uses `transform`, so the two never fight. |
-| §10.3 Mobile | Dedicated flex order, not a scaled desktop | Order: name/title → portrait → intro → education → contact → cards. The person is established before the reading starts. Nav tabs become a segmented control. |
+| §10.3 Mobile | Dedicated flex order, not a scaled desktop | Order: name/title → portrait → intro → education → contact. The project system is hidden below 720px: the project showcase follows directly, so it would only repeat it. The person is established before the reading starts. Nav tabs become a segmented control. |
 | §6.3 Education in hero | One mono metadata line, not a card | Keeps a recruiter-relevant fact in the hero at a fifth of the vertical cost. Full entry belongs in the Me view. |
 
 ### 1a. How the orbital system works

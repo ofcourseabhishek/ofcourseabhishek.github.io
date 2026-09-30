@@ -2,6 +2,7 @@ import { useCopy } from '../hooks/useCopy'
 import { usePointerParallax } from '../hooks/usePointerParallax'
 import { ProjectSystem } from './ProjectSystem'
 import {
+  ArrowIcon,
   CheckIcon,
   GithubIcon,
   LinkedinIcon,
@@ -124,6 +125,13 @@ export function Hero() {
               </li>
             </ul>
           </div>
+
+          {/* Phones only: the project system is hidden there, so this hands
+              the reader on to the showcase that follows. */}
+          <a className="hero__projects" href="#projects">
+            See my projects
+            <ArrowIcon className="hero__projects-arrow" />
+          </a>
         </div>
 
         {/* ---- Centre: portrait ------------------------------------------- */}

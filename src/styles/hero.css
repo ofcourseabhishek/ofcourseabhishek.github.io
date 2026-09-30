@@ -89,6 +89,27 @@
   text-wrap: pretty;
 }
 
+/* Mobile-only hand-off to the project showcase; see the mobile query. */
+.hero__projects {
+  display: none;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hero__projects-arrow {
+  width: 13px;
+  height: 13px;
+  rotate: 90deg;
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.hero__projects:hover .hero__projects-arrow {
+  translate: 0 3px;
+}
+
 /* Education compressed to one metadata line — the full entry lives in the
    Me view's education section. */
 .hero__meta {
@@ -453,8 +474,11 @@
     order: 8;
     margin-top: 0;
   }
-  .hero__col--right {
+  .hero__projects {
     order: 9;
+    display: inline-flex;
+    align-self: flex-start;
+    min-height: 44px;
   }
 
   .hero__grid > .hero__col--left > * {
@@ -478,11 +502,11 @@
     margin-left: calc(min(78vw, 360px) / -2);
   }
 
+  /* The project showcase follows directly below on phones, so the orbital
+     system would only repeat it. It stays on wider screens, where it sits
+     beside the portrait and the showcase is a scroll away. */
   .hero__col--right {
-    flex-direction: column;
-    max-width: none;
-    margin-left: 0;
-    padding-bottom: 0;
+    display: none;
   }
 
   /* Depth cues are pointer-driven; on touch they would never resolve. */
