@@ -91,5 +91,12 @@ the repositories' own descriptions, and unverified figures are left out.
 
 ## Deployment
 
-Not yet decided. `npm run build` produces a static site in `dist/` that any
-static host can serve.
+GitHub Pages, via `.github/workflows/deploy.yml`. Every push to `main` runs
+`npm ci` and `npm run build` on Node 22 and publishes `dist/`. It can also be
+run by hand from the Actions tab.
+
+One-time setup: in the repository's Settings → Pages, set Source to
+**GitHub Actions**.
+
+The repository is a user site (`ofcourseabhishek.github.io`), so it is served
+from the domain root and Vite's default `base` of `/` is correct.

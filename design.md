@@ -775,7 +775,9 @@ Select a library only after the required motion has been specified.
 
 ### 12.6 Deployment
 
-The hosting platform, domain, build configuration, and deployment workflow are TBD.
+**Decided:** GitHub Pages, deployed by a GitHub Actions workflow (`.github/workflows/deploy.yml`) on every push to `main`. The site is served at `ofcourseabhishek.github.io`.
+
+A custom domain is TBD.
 
 ---
 
